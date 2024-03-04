@@ -1,5 +1,25 @@
+variable "aws_ec2_instance_type_mysql" {
+  description = "AWS EC2 Instance Type: MySQL"
+  type        = string
+}
+
+variable "aws_ec2_instance_type_vpn" {
+  description = "AWS EC2 Instance Type: VPN"
+  type        = string
+}
+
+variable "aws_ec2_instance_type_web" {
+  description = "AWS EC2 Instance Type: Web"
+  type        = string
+}
+
 variable "aws_key_pair_public_key" {
   description = "AWS Key Pair: Public key"
+  type        = string
+}
+
+variable "aws_s3_bucket" {
+  description = "S3 bucket for backups"
   type        = string
 }
 

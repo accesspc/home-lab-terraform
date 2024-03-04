@@ -52,9 +52,15 @@ resource "aws_route" "igw" {
   route_table_id         = aws_route_table.public.id
 }
 
+resource "aws_route" "nat" {
+  destination_cidr_block = "0.0.0.0/0"
+  network_interface_id   = aws_instance.vpn.primary_network_interface_id
+  route_table_id         = aws_route_table.private.id
+}
+
 resource "aws_route_table" "private" {
   tags = {
-    Name = "${var.prefix}-RT"
+    Name = "${var.prefix}-Private-RT"
   }
 
   vpc_id = aws_vpc.default.id
@@ -62,7 +68,7 @@ resource "aws_route_table" "private" {
 
 resource "aws_route_table" "public" {
   tags = {
-    Name = "${var.prefix}-RT"
+    Name = "${var.prefix}-Public-RT"
   }
 
   vpc_id = aws_vpc.default.id

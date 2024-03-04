@@ -50,7 +50,3 @@ data "aws_ami" "default" {
 data "http" "myip" {
   url = "https://ipinfo.io"
 }
-
-output "myip" {
-  value = jsondecode(data.http.myip.response_body).ip
-}
