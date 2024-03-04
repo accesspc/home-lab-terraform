@@ -5,6 +5,7 @@ resource "aws_security_group" "mgmt" {
   tags = {
     Name = "${var.prefix}-MGMT-SG01"
   }
+
   vpc_id = aws_vpc.default.id
 }
 
@@ -23,7 +24,8 @@ resource "aws_security_group_rule" "mgmt_egress" {
 
 resource "aws_security_group_rule" "mgmt_ingress_ssh" {
   cidr_blocks = [
-    "${jsondecode(data.http.myip.response_body).ip}/32"
+    "${jsondecode(data.http.myip.response_body).ip}/32",
+    "${aws_eip.vpn.public_ip}/32"
   ]
 
   description       = "SSH"
