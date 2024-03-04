@@ -9,10 +9,11 @@ locals {
       "curl -fsSL https://tailscale.com/install.sh | sh",
       "tailscale up --auth-key ${var.ts_auth_key} --hostname aws --accept-routes --advertise-exit-node --advertise-routes=${var.aws_vpc_cidr} --accept-routes",
       # node exporter
-      "wget -O /tmp/node_exporter.tgz https://github.com/prometheus/node_exporter/releases/download/v1.7.0/node_exporter-1.7.0.linux-amd64.tar.gz",
+      "wget -O /tmp/node_exporter.tgz https://github.com/prometheus/node_exporter/releases/download/v1.7.0/node_exporter-1.7.0.linux-arm64.tar.gz",
       "tar -xf /tmp/node_exporter.tgz -C /tmp",
-      "mv -f /tmp/node_exporter-1.7.0.linux-amd64/node_exporter /usr/local/bin",
+      "mv -f /tmp/node_exporter-1.7.0.linux-arm64/node_exporter /usr/local/bin",
       "useradd -M -s /bin/false prometheus",
+      "systemctl enable --now prometheus-node-exporter.service",
     ])
 
     write_files = [
