@@ -1,12 +1,16 @@
 locals {
-  cloudinit_config_mysql = {
+  cloudinit_mysql = {
     runcmd = concat(
-      local.cloudinit_config.runcmd,
+      local.cloudinit_config.runcmd.common,
       [
-        "dnf install -y mariadb105-server",
+        "rsync -av /opt/aws-setup/mysql/* /",
+        "yum install -y mariadb105-server",
         "systemctl enable --now mariadb.service",
+        "bash /opt/scripts/mysql/restore.sh",
       ]
     )
+
+    write_files = local.cloudinit_config.write_files
   }
 }
 
@@ -15,7 +19,7 @@ data "cloudinit_config" "mysql" {
   gzip          = true
 
   part {
-    content      = yamlencode(local.cloudinit_config_mysql)
+    content      = yamlencode(local.cloudinit_mysql)
     content_type = "text/cloud-config"
     merge_type   = "list(append)+dict(recurse_array)+str()"
   }
@@ -54,25 +58,18 @@ resource "aws_iam_role_policy" "mysql" {
   "Statement": [
     {
       "Action": [
-        "s3:PutObject",
-        "s3:GetObject",
         "s3:AbortMultipartUpload",
-        "s3:ListMultipartUploadParts"
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:ListMultipartUploadParts",
+        "s3:PutObject"
       ],
       "Effect": "Allow",
       "Resource": [
-        "arn:aws:s3:::${var.aws_s3_bucket}/mysql/*"
+        "arn:aws:s3:::${var.aws_s3_bucket}",
+        "arn:aws:s3:::${var.aws_s3_bucket}/*"
       ],
       "Sid": "SidObjects0"
-    }, {
-      "Action": [
-        "s3:ListBucket"
-      ],
-      "Effect": "Allow",
-      "Resource": [
-        "arn:aws:s3:::${var.aws_s3_bucket}"
-      ],
-      "Sid": "SidBucket0"
     }
   ]
 }
@@ -102,6 +99,10 @@ resource "aws_instance" "mysql" {
     aws_security_group.mgmt.id,
     aws_security_group.mysql.id
   ]
+
+  volume_tags = {
+    Name = "${var.prefix}-MySQL01"
+  }
 }
 
 resource "aws_security_group" "mysql" {
@@ -136,4 +137,8 @@ resource "aws_security_group_rule" "mysql_ingress_mysql" {
   source_security_group_id = aws_security_group.web.id
   to_port                  = 3306
   type                     = "ingress"
+}
+
+output "ec2_mysql_private_ip" {
+  value = aws_instance.mysql.private_ip
 }

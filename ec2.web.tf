@@ -1,9 +1,9 @@
 locals {
-  cloudinit_config_web = {
+  cloudinit_web = {
     runcmd = concat(
-      local.cloudinit_config.runcmd,
+      local.cloudinit_config.runcmd.common,
       [
-        "dnf install -y httpd mod_ssl php8.2-fpm php8.2-mysqlnd",
+        "yum install -y httpd mod_ssl php8.2-fpm php8.2-mysqlnd",
       ]
     )
   }
@@ -14,7 +14,7 @@ data "cloudinit_config" "web" {
   gzip          = true
 
   part {
-    content      = yamlencode(local.cloudinit_config_web)
+    content      = yamlencode(local.cloudinit_web)
     content_type = "text/cloud-config"
     merge_type   = "list(append)+dict(recurse_array)+str()"
   }
@@ -110,6 +110,10 @@ resource "aws_instance" "web" {
     aws_security_group.mgmt.id,
     aws_security_group.web.id
   ]
+
+  volume_tags = {
+    Name = "${var.prefix}-Web01"
+  }
 }
 
 resource "aws_security_group" "web" {

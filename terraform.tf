@@ -10,6 +10,11 @@ terraform {
     aws = {
       source = "hashicorp/aws"
     }
+
+    cloudinit = {
+      source = "hashicorp/cloudinit"
+    }
+
     http = {
       source = "hashicorp/http"
     }

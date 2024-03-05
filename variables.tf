@@ -28,6 +28,16 @@ variable "aws_vpc_cidr" {
   type        = string
 }
 
+variable "git_ssh_key" {
+  description = "Git SSH Key"
+  type        = string
+}
+
+variable "git_ssh_known_hosts" {
+  description = "Git SSH Known Hosts"
+  type        = string
+}
+
 variable "prefix" {
   description = "Name prefix"
   type        = string

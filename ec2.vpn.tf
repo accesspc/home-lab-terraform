@@ -1,11 +1,10 @@
 locals {
-  cloudinit_config_vpn = {
+  cloudinit_vpn = {
     runcmd = concat(
-      local.cloudinit_config.runcmd,
+      local.cloudinit_config.runcmd.common,
       [
-        "dnf udpate -y",
         # NAT
-        "iptables -t nat -A POSTROUTING -o $(ls -1 /sys/class/net/ | grep -v lo | grep -v tailscale) -s 10.16.0.0/20 -j MASQUERADE",
+        "iptables -t nat -A POSTROUTING -o $(ls -1 /sys/class/net/ | grep -v lo | grep -v tailscale) -s ${var.aws_vpc_cidr} -j MASQUERADE",
         # tailscale
         "echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf",
         "echo 'net.ipv6.conf.all.forwarding = 1' >> /etc/sysctl.conf",
@@ -14,13 +13,7 @@ locals {
       ]
     )
 
-    write_files = [
-      {
-        content  = base64encode(file("${path.module}/files/prometheus-node-exporter.service"))
-        encoding = "b64"
-        path     = "/etc/systemd/system/prometheus-node-exporter.service"
-      }
-    ]
+    write_files = local.cloudinit_config.write_files
   }
 }
 
@@ -29,7 +22,7 @@ data "cloudinit_config" "vpn" {
   gzip          = true
 
   part {
-    content      = yamlencode(local.cloudinit_config_vpn)
+    content      = yamlencode(local.cloudinit_vpn)
     content_type = "text/cloud-config"
     merge_type   = "list(append)+dict(recurse_array)+str()"
   }
@@ -77,25 +70,18 @@ resource "aws_iam_role_policy" "vpn" {
   "Statement": [
     {
       "Action": [
-        "s3:PutObject",
-        "s3:GetObject",
         "s3:AbortMultipartUpload",
-        "s3:ListMultipartUploadParts"
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:ListMultipartUploadParts",
+        "s3:PutObject"
       ],
       "Effect": "Allow",
       "Resource": [
-        "arn:aws:s3:::${var.aws_s3_bucket}/vpn/*"
+        "arn:aws:s3:::${var.aws_s3_bucket}",
+        "arn:aws:s3:::${var.aws_s3_bucket}/*"
       ],
       "Sid": "SidObjects0"
-    }, {
-      "Action": [
-        "s3:ListBucket"
-      ],
-      "Effect": "Allow",
-      "Resource": [
-        "arn:aws:s3:::${var.aws_s3_bucket}"
-      ],
-      "Sid": "SidBucket0"
     }
   ]
 }
@@ -126,6 +112,10 @@ resource "aws_instance" "vpn" {
     aws_security_group.mgmt.id,
     aws_security_group.vpn.id
   ]
+
+  volume_tags = {
+    Name = "${var.prefix}-VPN01"
+  }
 }
 
 resource "aws_security_group" "vpn" {
@@ -150,4 +140,12 @@ resource "aws_security_group_rule" "vpn_egress" {
   security_group_id = aws_security_group.vpn.id
   to_port           = 0
   type              = "egress"
+}
+
+output "ec2_vpn_private_ip" {
+  value = aws_instance.vpn.private_ip
+}
+
+output "ec2_vpn_public_ip" {
+  value = aws_instance.vpn.public_ip
 }
