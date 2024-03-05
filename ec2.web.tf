@@ -3,9 +3,15 @@ locals {
     runcmd = concat(
       local.cloudinit_config.runcmd.common,
       [
-        "yum install -y httpd mod_ssl php8.2-fpm php8.2-mysqlnd",
+        "rsync -av /opt/aws-setup/web/* /",
+        "yum install -y httpd mod_ssl php8.2-fpm php8.2-mysqlnd certbot",
+        "systemctl enable --now httpd.service",
+        "systemctl enable --now php-fpm.service",
+        "bash /opt/scripts/web/restore.sh ${aws_instance.mysql.private_ip}",
       ]
     )
+
+    write_files = local.cloudinit_config.write_files
   }
 }
 
@@ -62,25 +68,18 @@ resource "aws_iam_role_policy" "web" {
   "Statement": [
     {
       "Action": [
-        "s3:PutObject",
-        "s3:GetObject",
         "s3:AbortMultipartUpload",
-        "s3:ListMultipartUploadParts"
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:ListMultipartUploadParts",
+        "s3:PutObject"
       ],
       "Effect": "Allow",
       "Resource": [
-        "arn:aws:s3:::${var.aws_s3_bucket}/web/*"
+        "arn:aws:s3:::${var.aws_s3_bucket}",
+        "arn:aws:s3:::${var.aws_s3_bucket}/*"
       ],
       "Sid": "SidObjects0"
-    }, {
-      "Action": [
-        "s3:ListBucket"
-      ],
-      "Effect": "Allow",
-      "Resource": [
-        "arn:aws:s3:::${var.aws_s3_bucket}"
-      ],
-      "Sid": "SidBucket0"
     }
   ]
 }
@@ -93,6 +92,10 @@ resource "aws_iam_instance_profile" "web" {
 }
 
 resource "aws_instance" "web" {
+  depends_on = [
+    aws_instance.mysql
+  ]
+
   ami                  = data.aws_ami.default.id
   ebs_optimized        = true
   iam_instance_profile = aws_iam_instance_profile.web.name
@@ -164,4 +167,12 @@ resource "aws_security_group_rule" "web_ingress_https" {
   security_group_id = aws_security_group.web.id
   to_port           = 443
   type              = "ingress"
+}
+
+output "ec2_web_private_ip" {
+  value = aws_instance.web.private_ip
+}
+
+output "ec2_web_public_ip" {
+  value = aws_instance.web.public_ip
 }
