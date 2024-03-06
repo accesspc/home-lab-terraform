@@ -3,9 +3,11 @@ locals {
     runcmd = concat(
       local.cloudinit_config.runcmd.common,
       [
-        "rsync -av /opt/aws-setup/mysql/* /",
+        # Packages
         "yum install -y mariadb105-server",
         "systemctl enable --now mariadb.service",
+        # Restore
+        "rsync -av /opt/aws-setup/mysql/* /",
         "bash /opt/scripts/mysql/restore.sh",
       ]
     )

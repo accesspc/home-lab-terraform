@@ -3,10 +3,12 @@ locals {
     runcmd = concat(
       local.cloudinit_config.runcmd.common,
       [
-        "rsync -av /opt/aws-setup/web/* /",
-        "yum install -y httpd mod_ssl php8.2-fpm php8.2-mysqlnd certbot",
+        # Packages
+        "yum install -y httpd mod_ssl php8.2-fpm php8.2-mysqlnd certbot python3-certbot-apache",
         "systemctl enable --now httpd.service",
         "systemctl enable --now php-fpm.service",
+        # Restore
+        "rsync -av /opt/aws-setup/web/* /",
         "bash /opt/scripts/web/restore.sh ${aws_instance.mysql.private_ip}",
       ]
     )
