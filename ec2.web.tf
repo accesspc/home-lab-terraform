@@ -4,7 +4,15 @@ locals {
       local.cloudinit_config.runcmd.common,
       [
         # Packages
-        "yum install -y httpd mod_ssl php8.2-fpm php8.2-mysqlnd certbot python3-certbot-apache",
+        "yum install -y httpd mod_ssl php-devel php-pear php8.2-fpm php8.2-gd php8.2-intl php8.2-mbstring php8.2-mysqlnd php8.2-xml php8.2-zip certbot python3-certbot-apache ImageMagick-devel ImageMagick",
+        # PHP Imagick module
+        "pear update-channels",
+        "pecl update-channels",
+        "pecl install --configureoptions 'with-imagick=\"autodetect\"' imagick",
+        "/usr/bin/yes 'no' | sudo pecl install -f --configureoptions 'with-imagick=\"autodetect\"' imagick",
+        "echo 'extension=imagick.so' > /etc/php.d/25-imagick.ini",
+        "sed -s -i 's/.*memory_limit.*/php_admin_value\\[memory_limit\\] = 256M/g' /etc/php-fpm.d/www.conf",
+        # Start services
         "systemctl enable --now httpd.service",
         "systemctl enable --now php-fpm.service",
         # Restore
@@ -171,10 +179,10 @@ resource "aws_security_group_rule" "web_ingress_https" {
   type              = "ingress"
 }
 
-output "ec2_web_private_ip" {
+output "web_private" {
   value = aws_instance.web.private_ip
 }
 
-output "ec2_web_public_ip" {
-  value = aws_instance.web.public_ip
+output "web_public" {
+  value = aws_eip.web.public_ip
 }

@@ -142,10 +142,10 @@ resource "aws_security_group_rule" "vpn_egress" {
   type              = "egress"
 }
 
-output "ec2_vpn_private_ip" {
+output "vpn_private" {
   value = aws_instance.vpn.private_ip
 }
 
-output "ec2_vpn_public_ip" {
-  value = aws_instance.vpn.public_ip
+output "vpn_public" {
+  value = aws_eip.vpn.public_ip
 }

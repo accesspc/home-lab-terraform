@@ -141,6 +141,6 @@ resource "aws_security_group_rule" "mysql_ingress_mysql" {
   type                     = "ingress"
 }
 
-output "ec2_mysql_private_ip" {
+output "mysql_private" {
   value = aws_instance.mysql.private_ip
 }
