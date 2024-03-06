@@ -1,3 +1,32 @@
+locals {
+  cloudinit_config = {
+    runcmd = {
+      common = [
+        # "set -e",
+        "yum udpate -y",
+        "yum install -y git",
+        "git clone git@github.com:accesspc/aws-setup.git /opt/aws-setup",
+        "rsync -av /opt/aws-setup/common/* /",
+        "/bin/bash /opt/scripts/setup.sh",
+      ]
+    }
+
+    write_files = [
+      {
+        content     = base64encode(var.git_ssh_key)
+        encoding    = "b64"
+        path        = "/root/.ssh/id_rsa"
+        permissions = "0600"
+        }, {
+        content     = base64encode(var.git_ssh_known_hosts)
+        encoding    = "b64"
+        path        = "/root/.ssh/known_hosts"
+        permissions = "0600"
+      }
+    ]
+  }
+}
+
 resource "aws_key_pair" "default" {
   key_name   = var.prefix
   public_key = var.aws_key_pair_public_key

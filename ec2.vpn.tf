@@ -3,13 +3,9 @@ locals {
     runcmd = concat(
       local.cloudinit_config.runcmd.common,
       [
-        # NAT
-        "iptables -t nat -A POSTROUTING -o $(ls -1 /sys/class/net/ | grep -v lo | grep -v tailscale) -s ${var.aws_vpc_cidr} -j MASQUERADE",
-        # tailscale
-        "echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf",
-        "echo 'net.ipv6.conf.all.forwarding = 1' >> /etc/sysctl.conf",
-        "sysctl -p",
-        "tailscale up --auth-key ${var.ts_auth_key} --hostname aws --accept-routes --advertise-exit-node --advertise-routes=${var.aws_vpc_cidr} --accept-routes",
+        # Restore
+        "rsync -av /opt/aws-setup/vpn/* /",
+        "bash /opt/scripts/vpn/restore.sh ${var.aws_vpc_cidr} ${var.ts_auth_key}",
       ]
     )
 
