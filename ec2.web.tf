@@ -4,8 +4,8 @@ locals {
       local.cloudinit_config.runcmd.common,
       [
         # Restore
-        "rsync -av /opt/aws-setup/web/* /",
-        "bash /opt/scripts/web/restore.sh ${aws_instance.mysql.private_ip}",
+        "rsync -av /opt/home-lab-setup/web/* /",
+        "bash /opt/home-lab-setup/scripts/web-restore.sh ${aws_instance.mysql.private_ip}",
       ]
     )
 

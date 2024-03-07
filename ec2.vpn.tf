@@ -4,8 +4,8 @@ locals {
       local.cloudinit_config.runcmd.common,
       [
         # Restore
-        "rsync -av /opt/aws-setup/vpn/* /",
-        "bash /opt/scripts/vpn/restore.sh ${var.aws_vpc_cidr} ${var.ts_auth_key}",
+        "rsync -av /opt/home-lab-setup/vpn/* /",
+        "bash /opt/home-lab-setup/scripts/vpn-restore.sh ${var.aws_vpc_cidr} ${var.ts_auth_key}",
       ]
     )
 

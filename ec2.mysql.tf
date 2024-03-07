@@ -4,8 +4,8 @@ locals {
       local.cloudinit_config.runcmd.common,
       [
         # Restore
-        "rsync -av /opt/aws-setup/mysql/* /",
-        "bash /opt/scripts/mysql/restore.sh",
+        "rsync -av /opt/home-lab-setup/mysql/* /",
+        "bash /opt/home-lab-setup/scripts/mysql-restore.sh",
       ]
     )
 

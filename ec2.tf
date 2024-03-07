@@ -5,9 +5,9 @@ locals {
         # "set -e",
         "yum udpate -y",
         "yum install -y git",
-        "git clone git@github.com:accesspc/aws-setup.git /opt/aws-setup",
-        "rsync -av /opt/aws-setup/common/* /",
-        "/bin/bash /opt/scripts/setup.sh",
+        "git clone git@github.com:accesspc/home-lab-setup.git /opt/home-lab-setup",
+        "rsync -av /opt/home-lab-setup/common/* /",
+        "/bin/bash /opt/home-lab-setup/scripts/setup.sh",
       ]
     }
 
