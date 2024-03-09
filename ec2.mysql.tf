@@ -58,6 +58,7 @@ resource "aws_iam_role_policy" "mysql" {
     {
       "Action": [
         "s3:AbortMultipartUpload",
+        "s3:DeleteObject",
         "s3:GetObject",
         "s3:ListBucket",
         "s3:ListMultipartUploadParts",

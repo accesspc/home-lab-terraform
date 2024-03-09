@@ -67,7 +67,9 @@ resource "aws_iam_role_policy" "web" {
     {
       "Action": [
         "s3:AbortMultipartUpload",
+        "s3:DeleteObject",
         "s3:GetObject",
+        "s3:GetObjectTagging",
         "s3:ListBucket",
         "s3:ListMultipartUploadParts",
         "s3:PutObject"
