@@ -76,6 +76,11 @@ resource "aws_iam_role_policy" "mysql" {
 EOF
 }
 
+resource "aws_iam_role_policy_attachment" "mysql_ssm" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  role       = aws_iam_role.mysql.id
+}
+
 resource "aws_iam_instance_profile" "mysql" {
   name = "${var.prefix}-EC2-MySQL-profile"
   role = aws_iam_role.mysql.name

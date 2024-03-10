@@ -86,6 +86,11 @@ resource "aws_iam_role_policy" "web" {
 EOF
 }
 
+resource "aws_iam_role_policy_attachment" "web_ssm" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  role       = aws_iam_role.web.id
+}
+
 resource "aws_iam_instance_profile" "web" {
   name = "${var.prefix}-EC2-Web-profile"
   role = aws_iam_role.web.name

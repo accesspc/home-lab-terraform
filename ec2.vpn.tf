@@ -84,6 +84,11 @@ resource "aws_iam_role_policy" "vpn" {
 EOF
 }
 
+resource "aws_iam_role_policy_attachment" "vpn_ssm" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  role       = aws_iam_role.vpn.id
+}
+
 resource "aws_iam_instance_profile" "vpn" {
   name = "${var.prefix}-EC2-VPN-profile"
   role = aws_iam_role.vpn.name
