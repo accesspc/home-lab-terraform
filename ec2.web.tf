@@ -30,6 +30,7 @@ resource "aws_eip" "web" {
 
   tags = {
     Name = "${var.prefix}-Web01"
+    Type = "Web"
   }
 }
 
@@ -53,6 +54,7 @@ EOF
 
   tags = {
     Name = "${var.prefix}-EC2-Web-role"
+    Type = "Web"
   }
 }
 
@@ -115,6 +117,7 @@ resource "aws_instance" "web" {
 
   tags = {
     Name = "${var.prefix}-Web01"
+    Type = "Web"
   }
 
   user_data = data.cloudinit_config.web.rendered
@@ -126,6 +129,7 @@ resource "aws_instance" "web" {
 
   volume_tags = {
     Name = "${var.prefix}-Web01"
+    Type = "Web"
   }
 }
 
@@ -135,6 +139,7 @@ resource "aws_security_group" "web" {
 
   tags = {
     Name = "${var.prefix}-Web-SG01"
+    Type = "Web"
   }
 
   vpc_id = aws_vpc.default.id

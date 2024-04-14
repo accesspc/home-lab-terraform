@@ -44,6 +44,7 @@ EOF
 
   tags = {
     Name = "${var.prefix}-EC2-MySQL-role"
+    Type = "MySQL"
   }
 }
 
@@ -96,6 +97,7 @@ resource "aws_instance" "mysql" {
 
   tags = {
     Name = "${var.prefix}-MySQL01"
+    Type = "MySQL"
   }
 
   user_data = data.cloudinit_config.mysql.rendered
@@ -107,6 +109,7 @@ resource "aws_instance" "mysql" {
 
   volume_tags = {
     Name = "${var.prefix}-MySQL01"
+    Type = "MySQL"
   }
 }
 
@@ -116,6 +119,7 @@ resource "aws_security_group" "mysql" {
 
   tags = {
     Name = "${var.prefix}-MySQL-SG01"
+    Type = "MySQL"
   }
 
   vpc_id = aws_vpc.default.id

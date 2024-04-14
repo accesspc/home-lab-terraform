@@ -30,6 +30,7 @@ resource "aws_eip" "vpn" {
 
   tags = {
     Name = "${var.prefix}-VPN01"
+    Type = "VPN"
   }
 }
 
@@ -53,6 +54,7 @@ EOF
 
   tags = {
     Name = "${var.prefix}-EC2-VPN-role"
+    Type = "VPN"
   }
 }
 
@@ -105,6 +107,7 @@ resource "aws_instance" "vpn" {
 
   tags = {
     Name = "${var.prefix}-VPN01"
+    Type = "VPN"
   }
 
   user_data = data.cloudinit_config.vpn.rendered
@@ -116,6 +119,7 @@ resource "aws_instance" "vpn" {
 
   volume_tags = {
     Name = "${var.prefix}-VPN01"
+    Type = "VPN"
   }
 }
 
@@ -125,6 +129,7 @@ resource "aws_security_group" "vpn" {
 
   tags = {
     Name = "${var.prefix}-VPN-SG01"
+    Type = "VPN"
   }
 
   vpc_id = aws_vpc.default.id
