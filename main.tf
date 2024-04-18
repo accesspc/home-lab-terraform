@@ -15,7 +15,39 @@ locals {
   }
 }
 
-data "aws_ami" "default" {
+data "aws_ami" "al2" {
+  filter {
+    name = "name"
+
+    values = [
+      "amzn2-ami-kernel*"
+    ]
+  }
+
+  filter {
+    name = "architecture"
+
+    values = [
+      "arm64"
+    ]
+  }
+
+  filter {
+    name = "virtualization-type"
+
+    values = [
+      "hvm"
+    ]
+  }
+
+  most_recent = true
+
+  owners = [
+    "amazon"
+  ]
+}
+
+data "aws_ami" "al2023" {
   filter {
     name = "name"
 

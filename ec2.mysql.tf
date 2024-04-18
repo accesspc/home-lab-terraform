@@ -88,7 +88,7 @@ resource "aws_iam_instance_profile" "mysql" {
 }
 
 resource "aws_instance" "mysql" {
-  ami                  = data.aws_ami.default.id
+  ami                  = data.aws_ami.al2023.id
   ebs_optimized        = true
   iam_instance_profile = aws_iam_instance_profile.mysql.name
   instance_type        = var.aws_ec2_instance_type_mysql
