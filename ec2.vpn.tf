@@ -102,8 +102,14 @@ resource "aws_instance" "vpn" {
   iam_instance_profile = aws_iam_instance_profile.vpn.name
   instance_type        = var.aws_ec2_instance_type_vpn
   key_name             = aws_key_pair.default.key_name
-  source_dest_check    = false
-  subnet_id            = aws_subnet.public[0].id
+
+  root_block_device {
+    volume_size = 8
+    volume_type = "gp3"
+  }
+
+  source_dest_check = false
+  subnet_id         = aws_subnet.public[0].id
 
   tags = {
     Name = "${var.prefix}-VPN01"

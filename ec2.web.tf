@@ -111,6 +111,7 @@ resource "aws_instance" "web" {
 
   root_block_device {
     volume_size = 16
+    volume_type = "gp3"
   }
 
   subnet_id = aws_subnet.public[0].id

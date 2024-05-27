@@ -93,7 +93,13 @@ resource "aws_instance" "mysql" {
   iam_instance_profile = aws_iam_instance_profile.mysql.name
   instance_type        = var.aws_ec2_instance_type_mysql
   key_name             = aws_key_pair.default.key_name
-  subnet_id            = aws_subnet.private[0].id
+
+  root_block_device {
+    volume_size = 8
+    volume_type = "gp3"
+  }
+
+  subnet_id = aws_subnet.private[0].id
 
   tags = {
     Name = "${var.prefix}-MySQL01"
