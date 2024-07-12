@@ -94,6 +94,10 @@ resource "aws_instance" "mysql" {
   instance_type        = var.aws_ec2_instance_type_mysql
   key_name             = aws_key_pair.default.key_name
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   root_block_device {
     volume_size = 8
     volume_type = "gp3"

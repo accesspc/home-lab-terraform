@@ -109,6 +109,10 @@ resource "aws_instance" "web" {
   instance_type        = var.aws_ec2_instance_type_web
   key_name             = aws_key_pair.default.key_name
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   root_block_device {
     volume_size = 16
     volume_type = "gp3"
