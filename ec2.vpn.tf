@@ -97,11 +97,12 @@ resource "aws_iam_instance_profile" "vpn" {
 }
 
 resource "aws_instance" "vpn" {
-  ami                  = data.aws_ami.al2023.id
-  ebs_optimized        = true
-  iam_instance_profile = aws_iam_instance_profile.vpn.name
-  instance_type        = var.aws_ec2_instance_type_vpn
-  key_name             = aws_key_pair.default.key_name
+  ami                         = data.aws_ami.al2023.id
+  associate_public_ip_address = true
+  ebs_optimized               = true
+  iam_instance_profile        = aws_iam_instance_profile.vpn.name
+  instance_type               = var.aws_ec2_instance_type_vpn
+  key_name                    = aws_key_pair.default.key_name
 
   root_block_device {
     volume_size = 8
