@@ -1,3 +1,6 @@
+# sonar scanner
+.scannerwork
+
 # Local .terraform directories
 **/.terraform/*
 
